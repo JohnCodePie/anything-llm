@@ -26,14 +26,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Merge upstream/main into fork main
+      - name: Merge upstream/master into fork master
         run: |
-          git checkout main
+          git checkout master
           git merge --ff-only upstream/master || {
-            echo "Non fast-forward merge needed. Did you commit directly to main?"
+            echo "Non fast-forward merge needed. Did you commit directly to master?"
             exit 1
           }
 
       - name: Push updated main back to fork
         run: |
-          git push origin main
+          git push origin master
