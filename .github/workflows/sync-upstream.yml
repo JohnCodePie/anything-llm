@@ -1,0 +1,39 @@
+name: Sync with upstream
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # every day at 03:00 UTC
+  workflow_dispatch:       # allow manual “Run workflow” from GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          # We need full history to merge properly
+          fetch-depth: 0
+
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/Mintplex-Labs/anything-llm.git
+          git fetch upstream
+
+      - name: Configure git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge upstream/main into fork main
+        run: |
+          git checkout main
+          git merge --ff-only upstream/main || {
+            echo "Non fast-forward merge needed. Did you commit directly to main?"
+            exit 1
+          }
+
+      - name: Push updated main back to fork
+        run: |
+          git push origin main
